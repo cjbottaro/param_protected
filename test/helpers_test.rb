@@ -26,8 +26,11 @@ end
 class HelpersTest < Test::Unit::TestCase
 
   def setup
-    FakeController._pp_accessible_map = nil
-    FakeController._pp_protected_map = nil
+    class << FakeController
+      attr_accessor :pp_protected, :pp_accessible
+    end
+    FakeController.pp_protected  = []
+    FakeController.pp_accessible = []
     @controller = FakeController.new
     @request    = ActionController::TestRequest.new
     @response   = ActionController::TestResponse.new
@@ -52,49 +55,40 @@ class HelpersTest < Test::Unit::TestCase
       'pets/fname' => [[params[:pets][0], :fname], [params[:pets][1], :fname]],
       'pets/mname' => [[params[:pets][0], :mname], [params[:pets][1], :mname]]
     }
-    xpathy_thing = Cjbottaro::ParamProtected::PrivateMethods.params_by_xpathy(params)
+    xpathy_thing = Cjbottaro::ParamProtected::Helpers.params_by_path(params)
     assert_equal expected_xpathy_thing, xpathy_thing
   end
 
   def test_accessible_map
+    expected_map = []
     
     FakeController.param_accessible :user_id
-    expected_map = { 'fake_action1' => ['user_id'],
-                     'fake_action2' => ['user_id'],
-                     'fake_action3' => ['user_id'] }
-    assert_equal expected_map, FakeController._pp_accessible_map
+    expected_map << [['user_id'], [:except]]
+    assert_equal expected_map, FakeController.pp_accessible
     
     FakeController.param_accessible :client_id
-    expected_map = { 'fake_action1' => ['user_id', 'client_id'],
-                     'fake_action2' => ['user_id', 'client_id'],
-                     'fake_action3' => ['user_id', 'client_id'] }
-    assert_equal expected_map, FakeController._pp_accessible_map
+    expected_map << [['client_id'], [:except]]
+    assert_equal expected_map, FakeController.pp_accessible
     
     FakeController.param_accessible :account_id, :only => :fake_action1
-    expected_map = { 'fake_action1' => ['user_id', 'client_id', 'account_id'],
-                     'fake_action2' => ['user_id', 'client_id'],
-                     'fake_action3' => ['user_id', 'client_id'] }
-    assert_equal expected_map, FakeController._pp_accessible_map
+    expected_map << [['account_id'], [:only, 'fake_action1']]
+    assert_equal expected_map, FakeController.pp_accessible
     
     FakeController.param_accessible :account_id, :except => :fake_action1
-    expected_map = { 'fake_action1' => ['user_id', 'client_id', 'account_id'],
-                     'fake_action2' => ['user_id', 'client_id', 'account_id'],
-                     'fake_action3' => ['user_id', 'client_id', 'account_id'] }
-    assert_equal expected_map, FakeController._pp_accessible_map
+    expected_map << [['account_id'], [:except, 'fake_action1']]
+    assert_equal expected_map, FakeController.pp_accessible
   end
   
   def test_accessible_map_with_arrays
+    expected_map = []
     
     FakeController.param_accessible [:user_id, :client_id], :only => [:fake_action1, :fake_action2]
-    expected_map = { 'fake_action1' => ['user_id', 'client_id'],
-                     'fake_action2' => ['user_id', 'client_id'] }
-    assert_equal expected_map, FakeController._pp_accessible_map
+    expected_map << [['user_id', 'client_id'], [:only, 'fake_action1', 'fake_action2']]
+    assert_equal expected_map, FakeController.pp_accessible
     
     FakeController.param_accessible [:user_id, :client_id], :except => [:fake_action1, :fake_action2]
-    expected_map = { 'fake_action1' => ['user_id', 'client_id'],
-                     'fake_action2' => ['user_id', 'client_id'],
-                     'fake_action3' => ['user_id', 'client_id'] }
-    assert_equal expected_map, FakeController._pp_accessible_map
+    expected_map << [['user_id', 'client_id'], [:except, 'fake_action1', 'fake_action2']]
+    assert_equal expected_map, FakeController.pp_accessible
   end
 
 end

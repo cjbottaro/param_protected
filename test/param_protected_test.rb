@@ -29,8 +29,11 @@ end
 class ParamProtectedTest < Test::Unit::TestCase
 
   def setup
-    FakeController._pp_accessible_map = nil
-    FakeController._pp_protected_map = nil
+    class << FakeController
+      attr_accessor :pp_protected, :pp_accessible
+    end
+    FakeController.pp_protected  = []
+    FakeController.pp_accessible = []
     @controller = FakeController.new
     @request    = ActionController::TestRequest.new
     @response   = ActionController::TestResponse.new
