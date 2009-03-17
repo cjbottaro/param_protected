@@ -184,7 +184,7 @@ class ParamAccessibleTest < Test::Unit::TestCase
   end
 
   def test_nested
-    @controller.class.param_accessible ['user', 'user/user_id'], :only => :fake_action1
+    @controller.class.param_accessible({:user => :user_id}, :only => :fake_action1)
 
     get :fake_action1, :user => { :user_id => 123, :good_id => 321 }, :user_id => 456, :good_id => 789
     assert @controller.params[:user].has_key?(:user_id) == true
@@ -211,8 +211,8 @@ class ParamAccessibleTest < Test::Unit::TestCase
 
     get :fake_action1, :user => { :user_id => 123, :good_id => 321 }, :user_id => 456, :good_id => 789
     assert @controller.params.has_key?(:user) == true
-    assert @controller.params[:user].has_key?(:user_id) == false
-    assert @controller.params[:user].has_key?(:good_id) == false
+    assert @controller.params[:user].has_key?(:user_id) == true
+    assert @controller.params[:user].has_key?(:good_id) == true
     assert @controller.params.has_key?(:user_id) == false
     assert @controller.params.has_key?(:good_id) == false
 
@@ -228,5 +228,5 @@ class ParamAccessibleTest < Test::Unit::TestCase
     assert @controller.params.has_key?(:user_id) == true
     assert @controller.params.has_key?(:good_id) == true
   end
-
+  
 end

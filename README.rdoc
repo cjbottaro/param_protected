@@ -25,44 +25,22 @@ Any of these combinations should work.
  param_protected :client_id
  param_protected [:client_id, :user_id]
  param_protected :client_id, :only => 'my_action'
- param_protected :client_id, :exclude => [:your_action, :my_action]
+ param_protected :client_id, :except => [:your_action, :my_action]
 
 == Whitelisting
 Any of these combinations should work.
  param_accessible :client_id
  param_accessible :[:client_id, :user_id]
  param_accessible :client_id, :only => 'my_action'
- param_accessible :client_id, :exclude => [:your_action, :my_action]
+ param_accessible :client_id, :except => [:your_action, :my_action]
 
 == Nested Params
-There is a language to protect nested params, but it has some caveats.
-
- param_protected 'user/fname'
-<tt>params[:user][:fname]</tt> will be removed, but <tt>params[:user][:client_id]</tt> won't (or anything else for that matter.)
-
- param_protected 'user'
-This works as expected... it removes <tt>params[:user]</tt>, even if it is a Hash.
-
- param_accessible 'user/fname'
-This will filter <tt>params[:user][:lname]</tt> and anything that is not <tt>params[:user][:fname]</tt>.
-
- param_accessible 'user'
-This has no effect if <tt>params[:user]</tt> is a Hash.
-
-== Array Params
-If you have an array of params like
- params[:person][:nicknames][0]
- params[:person][:nicknames][1]
- ...
- params[:person][:nicknames][n]
-
-You can remove all of them by saying
- param_protected 'person/nicknames'
+You can use combinations of arrays and hashes to specify nested params, much the same way ActiveRecord::Base#find's
+:include argument works.
+ param_accessible [:account_name, :user => [:first_name, :last_name, :address => [:street, :city, :state]]]
+ param_protected [:id, :password, :user => [:id, :password]]
 
 <tt>param_accessible</tt> also works with array params.
 
 == Caveats
 Both <tt>param_protected</tt> and <tt>param_accessible</tt> are really just calls to <tt>prepend_before_filter</tt>.  Thus any methods in your filter chain that run before either of these methods will have full access to the <em>unprotected</em> <tt>params</tt> Hash.
-
-== Notes
-You should be able to see all the parameters that have been filtered out in your log (log level info).  They get printed out directly after the 'Parameters:' line.

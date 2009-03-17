@@ -1,3 +1,9 @@
+03/17/2009
+----------
+* more sane way to specify nested parameters (honestly, I don't know what I was thinking before)
+* the old method of specifying nested parameters ("user/first_name", "user/last_name") DOES NOT WORK ANYMORE.
+* changed param_protected/param_accessible's :exclude argument to :except to better fit in with Rails
+
 07/16/2008
 ----------
 * rewrote the entire plugin (it should actually work now)

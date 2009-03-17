@@ -31,24 +31,21 @@ module Cjbottaro
     module InstanceMethods
     
       def do_param_protected
-        params_to_kill = Helpers.params_to_live_or_kill(self.class.pp_protected, action_name.to_s)
-        params_by_path = Helpers.params_by_path(params)
-        params_to_kill.each do |param|
-          next unless params_by_path.has_key?(param)
-          params_by_path[param].each { |h, v| h.delete(v) }
+        self.class.pp_protected.each do |protected_params, actions|
+          scope, actions = actions.first, actions[1..-1]
+          Helpers.do_param_protected(protected_params, self.params) \
+            if Helpers.action_matches?(scope, actions, self.action_name)
         end
       end
       
       def do_param_accessible
-        params_to_live = Helpers.params_to_live_or_kill(self.class.pp_accessible, action_name.to_s)
-        return if params_to_live.blank?
-        params_by_path = Helpers.params_by_path(params)
-        params_by_path.each do |path, hash|
-          next if params_to_live.include?(path)
-          hash.each { |h, v| h.delete(v) }
+        self.class.pp_accessible.each do |accessible_params, actions|
+          scope, actions = actions.first, actions[1..-1]
+          Helpers.do_param_accessible(accessible_params, self.params) \
+            if Helpers.action_matches?(scope, actions, self.action_name)
         end
       end
-    
+      
     end
     
     module Helpers
@@ -61,64 +58,62 @@ module Cjbottaro
         klass.pp_accessible = [] if klass.pp_accessible.nil?
       end
       
-      def self.normalize_params(params)
-        params = [params] unless params.instance_of?(Array)
-        params.collect{ |param| param.to_s }
+      def self.normalize_params(params, params_out = {})
+        if params.instance_of?(Array)
+          params.each{ |param| normalize_params(param, params_out) }
+        elsif params.instance_of?(Hash)
+          params.each do |k, v|
+            k = k.to_s
+            params_out[k] = {}
+            normalize_params(v, params_out[k])
+          end
+        else
+          params_out[params.to_s] = nil
+        end
+        params_out
       end
       
       def self.normalize_actions(actions)
-        return [:except] if actions.blank?
+        error_message = "invalid actions, use :only => ..., :except => ..., or nil"
+        return [:except, nil] if actions.blank?
+        raise ArgumentError, error_message unless actions.instance_of?(Hash)
+        raise ArgumentError, error_message unless actions.length == 1
+        raise ArgumentError, error_message unless [:only, :except].include?(actions.keys.first)
+        
         scope, actions = actions.keys.first, actions.values.first
         actions = [actions] unless actions.instance_of?(Array)
         actions = actions.collect{ |action| action.to_s }
         [scope, *actions]
       end
       
-      # specs will something like...
-      # [[param1, param2], [:only, action1, action2]
-      #  [param2, param3], [:except, action3, action4]]
-      def self.params_to_live_or_kill(specs, action)
-        specs.inject([]) do |memo, params_actions|
-          params, actions = params_actions
-          scope = actions.first # actions is a reference to a part of pp_protected or pp_accessible, so we don't want to alter it
-          actions = actions[1..-1]
-          memo += params if scope == :only and actions.include?(action)
-          memo += params if scope == :except and !actions.include?(action)
-          memo
+      def self.action_matches?(scope, valid_actions, action_name)
+        if scope == :only
+          valid_actions.include?(action_name)
+        elsif scope == :except
+          !valid_actions.include?(action_name)
+        else
+          raise ArgumentError, "unexpected scope (#{scope}), expected :only or :except"
         end
       end
-
-      # Takes a params hash and returns a hash where the keys are an xpath like string and the values are the
-      # information needed to remove the entry from the inputted params hash.
-      # Examples:
-      #  params = { :user => {:first => 'calia', :last => 'rose' } }
-      #  params_by_xpathy(params) => { 'user' => [[params, :user]],
-      #                                'user/first' => [[params[:user], :first]],
-      #                                'user/last'  => [[params[:user], :last]] }
-      # Notice the values are arrays of doubles.  That's so we can properly filter on params that are arrays, like so:
-      #  params = { :users => [ {:first => 'calia', :last => 'rose'},
-      #                         {:first => 'coco',  :last => 'rae' } ] }
-      #  params_by_xpathy(params) => { 'users' => [[params, :user]],
-      #                                'users/first' => [[params[:user][0], :first], [params[:user][1], :first]],
-      #                                'users/last'  => [[params[:user][0], :last ], [params[:user][0], :last ]] }
-      # Now if we want to protect parameter 'users/first', we can simply do...
-      #  params_by_xpathy(params)['users/first'].each { |h, v| h.delete(v) }      
-      def self.params_by_path(node, path_so_far = '', result = {})
-        node.each do |k, v|
-          path = path_so_far.blank? ? k.to_s : path_so_far + "/#{k}"
-          result[path] ||= []
-          result[path] << [node, k]
-          if v.is_a?(Hash)
-            params_by_path(v, path, result)
-          elsif v.is_a?(Array)
-            v.each{ |e| params_by_path(e, path, result)  }
-          end
-        end
-        return result
+      
+      def self.do_param_protected(protected_params, params)
+        return unless params.kind_of?(Hash)
+        return if protected_params.nil?
+        params.delete_if{ |k, v| protected_params.has_key?(k) and protected_params[k].nil? }
+        params.each{ |k, v| do_param_protected(protected_params[k], v) }
+        params
+      end
+      
+      def self.do_param_accessible(accessible_params, params)
+        return unless params.kind_of?(Hash)
+        return if accessible_params.nil?
+        params.delete_if{ |k, v| !accessible_params.has_key?(k) }
+        params.each{ |k, v| do_param_accessible(accessible_params[k], v) }
+        params
       end
       
     end
-
+    
   end
-
+  
 end

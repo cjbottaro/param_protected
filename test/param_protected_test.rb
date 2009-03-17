@@ -158,7 +158,7 @@ class ParamProtectedTest < Test::Unit::TestCase
   end
 
   def test_nested
-    @controller.class.param_protected 'user/user_id', :only => :fake_action1
+    @controller.class.param_protected({:user => :user_id}, :only => :fake_action1)
 
     get :fake_action1, :user => { :user_id => 123, :good_id => 321 }, :user_id => 456, :good_id => 789
     assert @controller.params[:user].has_key?(:user_id) == false
