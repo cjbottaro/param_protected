@@ -2,6 +2,20 @@ require 'rake'
 require 'rake/testtask'
 require 'rake/rdoctask'
 
+begin
+  require 'jeweler'
+  Jeweler::Tasks.new do |gemspec|
+    gemspec.name = "param_protected"
+    gemspec.summary = "Filter unwanted parameters in your controllers and actions."
+    gemspec.description = "Provides two class methods on ActiveController::Base that filter the params hash for that controller's actions.  You can think of them as the controller analog of attr_protected and attr_accessible."
+    gemspec.email = "cjbottaro@alumni.cs.utexas.edu"
+    gemspec.homepage = "http://github.com/cjbottaro/param_protected"
+    gemspec.authors = ["Christopher J. Bottaro"]
+  end
+rescue LoadError
+  puts "Jeweler not available. Install it with: sudo gem install technicalpickles-jeweler -s http://gems.github.com"
+end
+
 desc 'Default: run unit tests.'
 task :default => :test
 

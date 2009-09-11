@@ -1,3 +1,8 @@
+09/11/2009
+----------
+* Refactored tests to use plugin_test_helper.
+* gemified
+
 03/17/2009
 ----------
 * more sane way to specify nested parameters (honestly, I don't know what I was thinking before)

@@ -117,3 +117,5 @@ module Cjbottaro
   end
   
 end
+
+ActionController::Base.extend Cjbottaro::ParamProtected

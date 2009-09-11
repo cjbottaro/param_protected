@@ -1,11 +1,5 @@
-ParamProtected
-==============
-
 = Summary
 This plugin provides two class methods on <tt>ActiveController::Base</tt> that filter the <tt>params</tt> hash for that controller's actions.  You can think of them as the controller analog of <tt>attr_protected</tt> and <tt>attr_accessible</tt>.
-
-= Author
-Christopher J. Bottaro
 
 = Usage
  class YourController < ActiveController::Base
@@ -42,3 +36,6 @@ You can use combinations of arrays and hashes to specify nested params, much the
 
 == Caveats
 Both <tt>param_protected</tt> and <tt>param_accessible</tt> are really just calls to <tt>prepend_before_filter</tt>.  Thus any methods in your filter chain that run before either of these methods will have full access to the <em>unprotected</em> <tt>params</tt> Hash.
+
+= Author
+Christopher J. Bottaro
