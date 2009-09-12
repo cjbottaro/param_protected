@@ -1,6 +1,14 @@
 = Summary
 This plugin provides two class methods on <tt>ActiveController::Base</tt> that filter the <tt>params</tt> hash for that controller's actions.  You can think of them as the controller analog of <tt>attr_protected</tt> and <tt>attr_accessible</tt>.
 
+= Installation
+
+Put in your <tt>environment.rb</tt> file...
+
+  config.gem "cjbottaro-param_protected", :lib => "param_protected", :source => "http://gems.github.com"
+  
+Alternatively, just install the gem from the command line and <tt>require "param_protected"</tt> somewhere in your project.
+
 = Usage
  class YourController < ActiveController::Base
    param_protected <param_name> <options>
@@ -29,13 +37,13 @@ Any of these combinations should work.
  param_accessible :client_id, :except => [:your_action, :my_action]
 
 == Nested Params
-You can use combinations of arrays and hashes to specify nested params, much the same way ActiveRecord::Base#find's
-:include argument works.
+You can use combinations of arrays and hashes to specify nested params, much the same way <tt>ActiveRecord::Base#find</tt>'s
+<tt>:include</tt> argument works.
  param_accessible [:account_name, { :user => [:first_name, :last_name, :address => [:street, :city, :state]] }]
  param_protected [:id, :password, { :user => [:id, :password] }]
 
-== Caveats
-Both <tt>param_protected</tt> and <tt>param_accessible</tt> are really just calls to <tt>prepend_before_filter</tt>.  Thus any methods in your filter chain that run before either of these methods will have full access to the <em>unprotected</em> <tt>params</tt> Hash.
+= How does it work?
+It does an <tt>alias_method_chain</tt> on <tt>ActionController::Base#params</tt> that filters (and caches) the params.  You can get the unfiltered, pristine params by calling <tt>ActionController::Base#params_without_protection</tt>.
 
 = Author
 Christopher J. Bottaro

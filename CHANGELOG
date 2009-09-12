@@ -1,3 +1,8 @@
+09/12/2009
+----------
+* Restructured and reorganized.  Now the majority of the work is done in the Protector class.  This minimizes the amount of methods / instance variables that clutter the controllers.
+* The filtering is done in ActionController::Base#params now, instead of as a before filter.  This eliminates the caveat of before filters declared after param_protected/param_accessible calls having access to the unprotected params.
+
 09/11/2009
 ----------
 * Refactored tests to use plugin_test_helper.
