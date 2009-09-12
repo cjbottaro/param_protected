@@ -5,11 +5,11 @@
 
 Gem::Specification.new do |s|
   s.name = %q{param_protected}
-  s.version = "1.0.0"
+  s.version = "1.1.0"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Christopher J. Bottaro"]
-  s.date = %q{2009-09-11}
+  s.date = %q{2009-09-12}
   s.description = %q{Provides two class methods on ActiveController::Base that filter the params hash for that controller's actions.  You can think of them as the controller analog of attr_protected and attr_accessible.}
   s.email = %q{cjbottaro@alumni.cs.utexas.edu}
   s.extra_rdoc_files = [
@@ -23,6 +23,10 @@ Gem::Specification.new do |s|
      "init.rb",
      "install.rb",
      "lib/param_protected.rb",
+     "lib/param_protected/constants.rb",
+     "lib/param_protected/controller_modifications.rb",
+     "lib/param_protected/meta_class.rb",
+     "lib/param_protected/protector.rb",
      "param_protected.gemspec",
      "tasks/param_protected_tasks.rake",
      "test/accessible_except_test.rb",
@@ -42,9 +46,8 @@ Gem::Specification.new do |s|
      "test/app_root/config/environments/sqlite3.rb",
      "test/app_root/config/routes.rb",
      "test/app_root/lib/console_with_fixtures.rb",
-     "test/app_root/log/in_memory.log",
-     "test/helpers_test.rb",
      "test/protected_controller_test.rb",
+     "test/protector_test.rb",
      "test/test_helper.rb",
      "test/users_controller_test.rb",
      "uninstall.rb"
@@ -72,8 +75,8 @@ Gem::Specification.new do |s|
      "test/app_root/config/environments/sqlite3.rb",
      "test/app_root/config/routes.rb",
      "test/app_root/lib/console_with_fixtures.rb",
-     "test/helpers_test.rb",
      "test/protected_controller_test.rb",
+     "test/protector_test.rb",
      "test/test_helper.rb",
      "test/users_controller_test.rb"
   ]
