@@ -21,15 +21,47 @@ module ParamProtected
     
     def protect(controller_params, action_name)
       returning(deep_copy(controller_params)) do |params|
-        @protections.each do |protected_params, actions, exclusivity|
-          scope, actions = actions.first, actions[1..-1] # Careful not to modify the actions array in place.
-          next unless action_matches?(scope, actions, action_name)
-          filter_params(protected_params, params, exclusivity)
+        protections_for_action(action_name).each do |exclusivity, protected_params|
+          filter_params(protected_params, params, exclusivity) unless protected_params.empty?
         end
       end
     end
     
   private
+
+    def protections_for_action(action_name)
+      @protections_for_action ||= { }
+
+      @protections_for_action[action_name] ||= @protections.select do |protected_params, actions, exclusivity|
+        action_matches?(actions[0], actions[1..-1], action_name)
+      end.inject({ WHITELIST => { }, BLACKLIST => { } }) do |result, (protected_params, action_name, exclusivity)|
+        merge_protections(result[exclusivity], protected_params)
+        result
+      end
+    end
+
+    # Merge protections for the same params into one so as to allow extension of them 
+    # in inheriting controllers.
+    # 
+    # Mutating the first argument is okay since this method is used within inject only.
+    # 
+    # Example:
+    # merge_protections({ :foo => { :qux => nil }, :bar => { :baz => nil, :qux => nil } },
+    #                   { :foo => { :baz => nil, :qux => { :foo => nil } } })
+    # => 
+    #
+    # { :foo => { :baz => nil, :qux => { :foo => nil } }, :bar => { :baz =>nil, :qux => nil } }
+    def merge_protections(protections, protected_params)
+      protected_params.each do |k,v|
+        if protections[k].is_a?(Hash)
+          merge_protections(protections[k], v) if v
+        else
+          protections[k] = v
+        end
+      end
+
+      protections
+    end
     
     # When specifying params to protect, we allow a combination of arrays and hashes much like how
     # ActiveRecord::Base#find's :include options works.  This method normalizes that into just nested hashes,
