@@ -12,6 +12,10 @@ module ParamProtected
     def initialize
       @protections = []
     end
+
+    def initialize_copy(copy)
+      copy.instance_variable_set(:@protections, deep_copy(@protections))
+    end
     
     def declare_protection(params, actions, exclusivity)
       params  = normalize_params(params)

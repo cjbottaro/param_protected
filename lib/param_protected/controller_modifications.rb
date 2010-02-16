@@ -4,6 +4,7 @@ module ParamProtected
     def self.extended(action_controller)
       action_controller.class_eval do
         extend  ClassMethods
+        metaclass.alias_method_chain :inherited, :protector
         include InstanceMethods
         alias_method_chain :params, :protection
       end
@@ -17,6 +18,16 @@ module ParamProtected
       
       def param_accessible(params, actions = nil)
         Protector.instance(self).declare_protection(params, actions, WHITELIST)
+      end
+
+      def inherited_with_protector(controller)
+        inherited_without_protector(controller)
+
+        if defined? @pp_protector
+          controller.instance_variable_set :@pp_protector, @pp_protector.dup
+          controller.class_eval { attr_reader :pp_protector }
+        end
+        
       end
       
     end
