@@ -1,7 +1,7 @@
-= Summary
+=== Summary
 This plugin provides two class methods on <tt>ActiveController::Base</tt> that filter the <tt>params</tt> hash for that controller's actions.  You can think of them as the controller analog of <tt>attr_protected</tt> and <tt>attr_accessible</tt>.
 
-= Installation
+=== Installation
 
 Put in your <tt>environment.rb</tt> file...
 
@@ -9,7 +9,7 @@ Put in your <tt>environment.rb</tt> file...
   
 Alternatively, just install the gem from the command line and <tt>require "param_protected"</tt> somewhere in your project.
 
-= Usage
+=== Usage
  class YourController < ActiveController::Base
    param_protected <param_name> <options>
    param_accessible <param_name> <options>
@@ -20,30 +20,44 @@ Alternatively, just install the gem from the command line and <tt>require "param
 
 <tt>options</tt> is a Hash that has <em>one</em> of two keys:  <tt>:only</tt> or <tt>:except</tt>.  The value for these keys is a String, Symbol, or Array of Strings and/or Symbols which denotes to the action(s) for which params to protect.
 
-= Examples
-
-== Blacklisting
+=== Blacklisting
 Any of these combinations should work.
  param_protected :client_id
  param_protected [:client_id, :user_id]
  param_protected :client_id, :only => 'my_action'
  param_protected :client_id, :except => [:your_action, :my_action]
 
-== Whitelisting
+=== Whitelisting
 Any of these combinations should work.
  param_accessible :client_id
  param_accessible :[:client_id, :user_id]
  param_accessible :client_id, :only => 'my_action'
  param_accessible :client_id, :except => [:your_action, :my_action]
 
-== Nested Params
+=== Nested Params
 You can use combinations of arrays and hashes to specify nested params, much the same way <tt>ActiveRecord::Base#find</tt>'s
 <tt>:include</tt> argument works.
  param_accessible [:account_name, { :user => [:first_name, :last_name, :address => [:street, :city, :state]] }]
  param_protected [:id, :password, { :user => [:id, :password] }]
 
-= How does it work?
+=== Merging
+If you call <tt>param_protected</tt> or <tt>param_accessible</tt> multiple times for an action or actions, then the protections will be merged.  For example...
+ param_protected [:id, :user], :only => :some_action
+ param_protected [{ :user => [:first, :last] }, :password], :only => :some_action
+Is equivalent to saying...
+ param_protected [:id, { :user => [:first, :last] }, :password], :only => :some_action
+Credit: Moritz Heidkamp
+
+=== Inheritance
+Param protections will be inherited to derived controllers.
+
+Credit: Moritz Heidkamp
+
+=== How does it work?
 It does an <tt>alias_method_chain</tt> on <tt>ActionController::Base#params</tt> that filters (and caches) the params.  You can get the unfiltered, pristine params by calling <tt>ActionController::Base#params_without_protection</tt>.
 
-= Author
-Christopher J. Bottaro
+=== Author
+Christopher J. Bottaro - {cjbottaro}[http://github.com/cjbottaro]
+
+=== Contributors
+Moritz Heidkamp - {DerGuteMoritz}[http://github.com/DerGuteMoritz]
