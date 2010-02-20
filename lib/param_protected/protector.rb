@@ -109,7 +109,7 @@ module ParamProtected
     
     # When #dup just isn't enough... :P
     def deep_copy(object)
-      returning(try_to_dup(object)) do |new_object|
+      returning(try_to_clone(object)) do |new_object|
         case new_object
         when Hash
           new_object.each{ |k, v| new_object[k] = deep_copy(v) }
@@ -120,8 +120,8 @@ module ParamProtected
     end
     
     # Some objects are not dupable... like TrueClass, FalseClass and NilClass.
-    def try_to_dup(object)
-      object.dup
+    def try_to_clone(object)
+      object.clone
     rescue TypeError
       object
     end
