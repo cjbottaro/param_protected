@@ -17,15 +17,15 @@ module ParamProtected
       copy.instance_variable_set(:@protections, deep_copy(@protections))
     end
     
-    def declare_protection(params, actions, exclusivity)
+    def declare_protection(params, options, exclusivity)
       params  = normalize_params(params)
-      actions = normalize_actions(actions)
-      @protections << [params, actions, exclusivity]
+      actions, condition = normalize_options(options)
+      @protections << [params, actions, condition, exclusivity]
     end
     
-    def protect(controller_params, action_name)
+    def protect(controller, controller_params, action_name)
       returning(deep_copy(controller_params)) do |params|
-        protections_for_action(action_name).each do |exclusivity, protected_params|
+        protections_for_action(controller, action_name).each do |exclusivity, protected_params|
           filter_params(protected_params, params, exclusivity) unless protected_params.empty?
         end
       end
@@ -33,12 +33,10 @@ module ParamProtected
     
   private
 
-    def protections_for_action(action_name)
-      @protections_for_action ||= { }
-
-      @protections_for_action[action_name] ||= @protections.select do |protected_params, actions, exclusivity|
-        action_matches?(actions[0], actions[1..-1], action_name)
-      end.inject({ WHITELIST => { }, BLACKLIST => { } }) do |result, (protected_params, action_name, exclusivity)|
+    def protections_for_action(controller, action_name)
+      @protections.select do |protected_params, actions, condition, exclusivity|
+        action_matches?(actions[0], actions[1..-1], action_name) && condition_applies?(controller, condition)
+      end.inject({ WHITELIST => { }, BLACKLIST => { } }) do |result, (protected_params, actions, condition, exclusivity)|
         merge_protections(result[exclusivity], protected_params)
         result
       end
@@ -94,17 +92,32 @@ module ParamProtected
     #   :only => [:action1, :action2]
     # This method normalizes that to...
     #   [:only, "action1", "action2"]
-    def normalize_actions(actions)
-      error_message = "invalid actions, use :only => ..., :except => ..., or nil"
-      return [:except, nil] if actions.blank?
-      raise ArgumentError, error_message unless actions.instance_of?(Hash)
-      raise ArgumentError, error_message unless actions.length == 1
-      raise ArgumentError, error_message unless [:only, :except].include?(actions.keys.first)
-      
-      scope, actions = actions.keys.first, actions.values.first
+    def normalize_options(options)
+      error_message = "invalid options, use :only or :except, :if or :unless"
+      return [[:except, nil], [:if, true]] if options.blank?
+
+      raise ArgumentError, error_message unless options.instance_of?(Hash)
+
+      scope = [:only, :except] & options.keys
+      condition = [:if, :unless] & options.keys
+
+      raise ArgumentError, error_message unless (options.keys - [:only, :except, :if, :unless]).empty?
+      raise ArgumentError, error_message if scope.size > 1 || condition.size > 1
+
+      scope = scope.first || :except
+      actions = options[scope]
       actions = [actions] unless actions.instance_of?(Array)
-      actions = actions.collect{ |action| action.to_s }
-      [scope, *actions]
+      actions = actions.collect{ |action| action.try(:to_s) }
+
+      condition = condition.first || :if
+      
+      if options.has_key?(condition)
+        condition_value = options[condition]
+      else
+        condition_value = true
+      end
+      
+      [[scope, *actions], [condition, condition_value]]
     end
     
     # When #dup just isn't enough... :P
@@ -124,6 +137,23 @@ module ParamProtected
       object.clone
     rescue TypeError
       object
+    end
+
+    def condition_applies?(controller, condition)
+      result = case condition[1]
+               when Proc
+                 condition[1].call(controller)
+               when Symbol, String
+                 controller.send(condition[1])
+               else
+                 condition[1]
+               end
+
+      if condition[0] == :unless
+        not result
+      else
+        result
+      end
     end
     
     def action_matches?(scope, actions, action_name)

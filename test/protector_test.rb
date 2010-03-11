@@ -20,25 +20,29 @@ class HelpersTest < Test::Unit::TestCase
     assert_equal({"something" => {"stuff" => nil, "blah" => {"bleck" => nil}}}, params)
   end
   
-  def test_normalize_actions
-    actions = @protector.send(:normalize_actions, nil)
-    assert_equal [:except, nil], actions
+  def test_normalize_options
+    options = @protector.send(:normalize_options, nil)
+    assert_equal [[:except, nil], [:if, true]], options
     
-    actions = @protector.send(:normalize_actions, :only => :blah)
-    assert_equal [:only, "blah"], actions
+    options = @protector.send(:normalize_options, :only => :blah)
+    assert_equal [[:only, "blah"], [:if, true]], options
     
-    actions = @protector.send(:normalize_actions, :only => [:blah, :bleck])
-    assert_equal [:only, "blah", "bleck"], actions
+    options = @protector.send(:normalize_options, :only => [:blah, :bleck])
+    assert_equal [[:only, "blah", "bleck"], [:if, true]], options
     
-    actions = @protector.send(:normalize_actions, :except => :blah)
-    assert_equal [:except, "blah"], actions
+    options = @protector.send(:normalize_options, :except => :blah)
+    assert_equal [[:except, "blah"], [:if, true]], options
     
-    actions = @protector.send(:normalize_actions, :except => [:blah, :bleck])
-    assert_equal [:except, "blah", "bleck"], actions
+    options = @protector.send(:normalize_options, :except => [:blah, :bleck])
+    assert_equal [[:except, "blah", "bleck"], [:if, true]], options
+
+    options = @protector.send(:normalize_options, :unless => :foo?)
+    assert_equal [[:except, nil], [:unless, :foo?]], options
     
-    assert_raises(ArgumentError){ @protector.send(:normalize_actions, :onlyy => :blah) }
-    assert_raises(ArgumentError){ @protector.send(:normalize_actions, :blah) }
-    assert_raises(ArgumentError){ @protector.send(:normalize_actions, :only => :something, :except => :something) }
+    assert_raises(ArgumentError){ @protector.send(:normalize_options, :onlyy => :blah) }
+    assert_raises(ArgumentError){ @protector.send(:normalize_options, :blah) }
+    assert_raises(ArgumentError){ @protector.send(:normalize_options, :only => :something, :except => :something) }
+    assert_raises(ArgumentError){ @protector.send(:normalize_options, :if => :something, :unless => :something) }
   end
   
   def test_deep_copy

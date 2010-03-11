@@ -46,7 +46,7 @@ module ParamProtected
         elsif @params_protected
           @params_protected
         else
-          @params_protected = Protector.instance(self.class).protect(params_without_protection, action_name)
+          @params_protected = Protector.instance(self.class).protect(self, params_without_protection, action_name)
         end
         
       end
