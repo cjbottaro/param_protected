@@ -78,7 +78,12 @@ module ParamProtected
         params.each{ |param| normalize_params(param, params_out) }
       elsif params.instance_of?(Hash)
         params.each do |k, v|
-          k = k.to_s
+          k = if k.is_a?(Regexp)
+                k
+              else
+                k.to_s
+              end
+          
           params_out[k] = {}
           normalize_params(v, params_out[k])
         end
@@ -172,15 +177,34 @@ module ParamProtected
       return unless params.kind_of?(Hash)
       return if protected_params.nil?
       if exclusivity == BLACKLIST
-        params.delete_if{ |k, v| protected_params.has_key?(k) and protected_params[k].nil? }
+        params.delete_if{ |k, v| key_exists?(protected_params, k) and find_by_key(protected_params, k).nil? }
       elsif exclusivity == WHITELIST
-        params.delete_if{ |k, v| !protected_params.has_key?(k) }
+        params.delete_if{ |k, v| !key_exists?(protected_params, k) }
       else
         raise ArgumentError, "unexpected exclusivity: #{exclusivity}"
       end
       params.each{ |k, v| filter_params(protected_params[k], v, exclusivity) }
       params
     end
+
+    def find_by_key(protected_params, key)
+      protected_params.detect do |k,v|
+        key_matches?(k, key)
+      end.try(:last)
+    end
     
+    def key_exists?(protected_params, key)
+      protected_params.any? do |k,v|
+        key_matches?(k, key)
+      end
+    end
+
+    def key_matches?(k, key)
+      if k.is_a? Regexp
+        key.to_s =~ k
+      else
+        key.to_s == k.to_s
+      end
+    end
   end
 end

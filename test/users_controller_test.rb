@@ -2,11 +2,15 @@ require "test_helper"
 
 class UsersControllerTest < ActionController::TestCase
   PARAMS = { :user => { :id => 123,
-                          :name => { :first => "chris", :middle => "james", :last => "bottaro"},
-                          :email => "cjbottaro@blah.com" },
+                        '33' => 'ok',
+                        '123' => 'ok',
+                        :x21 => 'ok',
+                        :name => { :first => "chris", :middle => "james", :last => "bottaro"},
+                        :email => "cjbottaro@blah.com" },
              :something => "something" }
              
   EXPECTED_PARAMS = { "user" => { "name" => {"first" => "chris", "last" => "bottaro"},
+                                  '33' => 'ok', '123' => 'ok',
                                   "email" => "cjbottaro@blah.com" } }
   
   def test_create
