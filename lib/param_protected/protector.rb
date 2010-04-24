@@ -78,19 +78,22 @@ module ParamProtected
         params.each{ |param| normalize_params(param, params_out) }
       elsif params.instance_of?(Hash)
         params.each do |k, v|
-          k = if k.is_a?(Regexp)
-                k
-              else
-                k.to_s
-              end
-          
+          k = normalize_key(k)
           params_out[k] = {}
           normalize_params(v, params_out[k])
         end
       else
-        params_out[params.to_s] = nil
+        params_out[normalize_key(params)] = nil
       end
       params_out
+    end
+
+    def normalize_key(k)
+      if k.is_a?(Regexp)
+        k
+      else
+        k.to_s
+      end
     end
     
     # When specifying which actions param protection apply to, we allow a format like this...
@@ -206,5 +209,6 @@ module ParamProtected
         key.to_s == k.to_s
       end
     end
+
   end
 end
