@@ -5,11 +5,11 @@
 
 Gem::Specification.new do |s|
   s.name = %q{param_protected}
-  s.version = "1.2.0"
+  s.version = "1.3.0"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Christopher J. Bottaro"]
-  s.date = %q{2010-02-18}
+  s.date = %q{2010-05-25}
   s.description = %q{Provides two class methods on ActiveController::Base that filter the params hash for that controller's actions.  You can think of them as the controller analog of attr_protected and attr_accessible.}
   s.email = %q{cjbottaro@alumni.cs.utexas.edu}
   s.extra_rdoc_files = [
@@ -34,6 +34,7 @@ Gem::Specification.new do |s|
      "test/app_root/app/controllers/accessible_except_controller.rb",
      "test/app_root/app/controllers/accessible_only_controller.rb",
      "test/app_root/app/controllers/application_controller.rb",
+     "test/app_root/app/controllers/conditions_controller.rb",
      "test/app_root/app/controllers/inherited_users_controller.rb",
      "test/app_root/app/controllers/merge_controller.rb",
      "test/app_root/app/controllers/protected_controller.rb",
@@ -48,6 +49,7 @@ Gem::Specification.new do |s|
      "test/app_root/config/environments/sqlite3.rb",
      "test/app_root/config/routes.rb",
      "test/app_root/lib/console_with_fixtures.rb",
+     "test/conditions_controller_test.rb",
      "test/inherited_users_controller_test.rb",
      "test/merge_controller_test.rb",
      "test/protected_controller_test.rb",
@@ -59,7 +61,7 @@ Gem::Specification.new do |s|
   s.homepage = %q{http://github.com/cjbottaro/param_protected}
   s.rdoc_options = ["--charset=UTF-8"]
   s.require_paths = ["lib"]
-  s.rubygems_version = %q{1.3.5}
+  s.rubygems_version = %q{1.3.6}
   s.summary = %q{Filter unwanted parameters in your controllers and actions.}
   s.test_files = [
     "test/accessible_except_test.rb",
@@ -67,6 +69,7 @@ Gem::Specification.new do |s|
      "test/app_root/app/controllers/accessible_except_controller.rb",
      "test/app_root/app/controllers/accessible_only_controller.rb",
      "test/app_root/app/controllers/application_controller.rb",
+     "test/app_root/app/controllers/conditions_controller.rb",
      "test/app_root/app/controllers/inherited_users_controller.rb",
      "test/app_root/app/controllers/merge_controller.rb",
      "test/app_root/app/controllers/protected_controller.rb",
@@ -80,6 +83,7 @@ Gem::Specification.new do |s|
      "test/app_root/config/environments/sqlite3.rb",
      "test/app_root/config/routes.rb",
      "test/app_root/lib/console_with_fixtures.rb",
+     "test/conditions_controller_test.rb",
      "test/inherited_users_controller_test.rb",
      "test/merge_controller_test.rb",
      "test/protected_controller_test.rb",
