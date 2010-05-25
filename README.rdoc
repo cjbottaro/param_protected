@@ -46,12 +46,27 @@ If you call <tt>param_protected</tt> or <tt>param_accessible</tt> multiple times
  param_protected [{ :user => [:first, :last] }, :password], :only => :some_action
 Is equivalent to saying...
  param_protected [:id, { :user => [:first, :last] }, :password], :only => :some_action
+
 Credit: Moritz Heidkamp
 
 === Inheritance
 Param protections will be inherited to derived controllers.
 
 Credit: Moritz Heidkamp
+
+=== Conditions
+You can conditionally protect params...
+ param_protected :admin, :unless => "user_is_admin?"
+ param_accessible :admin, :if => :user_is_admin?
+ param_protected :admin, :unless => Proc.new{ |controller| controller.user_is_admin? }
+
+Credit: Mortiz Heidkamp
+
+== Regular Expressions
+You can use regular expressions when specifying which params to make protected or accessible.
+ param_accessible /item\d/
+
+Credit: Mortiz Heidkamp
 
 === How does it work?
 It does an <tt>alias_method_chain</tt> on <tt>ActionController::Base#params</tt> that filters (and caches) the params.  You can get the unfiltered, pristine params by calling <tt>ActionController::Base#params_without_protection</tt>.
