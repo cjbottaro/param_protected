@@ -5,7 +5,7 @@ This plugin provides two class methods on <tt>ActiveController::Base</tt> that f
 
 Put in your <tt>environment.rb</tt> file...
 
-  config.gem "cjbottaro-param_protected", :lib => "param_protected", :source => "http://gems.github.com"
+  config.gem "param_protected"
   
 Alternatively, just install the gem from the command line and <tt>require "param_protected"</tt> somewhere in your project.
 
