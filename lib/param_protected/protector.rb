@@ -4,7 +4,7 @@ module ParamProtected
     def self.instance(controller)
       unless controller.respond_to?(:pp_protector)
         controller.class_eval{ @pp_protector = Protector.new }
-        controller.meta_eval { attr_reader :pp_protector }
+        controller.singleton_class.class_eval { attr_reader :pp_protector }
       end
       controller.pp_protector
     end
@@ -24,7 +24,7 @@ module ParamProtected
     end
     
     def protect(controller, controller_params, action_name)
-      returning(deep_copy(controller_params)) do |params|
+      deep_copy(controller_params).tap do |params|
         protections_for_action(controller, action_name).each do |exclusivity, protected_params|
           filter_params(protected_params, params, exclusivity) unless protected_params.empty?
         end
@@ -130,7 +130,7 @@ module ParamProtected
     
     # When #dup just isn't enough... :P
     def deep_copy(object)
-      returning(try_to_clone(object)) do |new_object|
+      try_to_clone(object).tap do |new_object|
         case new_object
         when Hash
           new_object.each{ |k, v| new_object[k] = deep_copy(v) }

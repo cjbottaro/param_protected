@@ -4,7 +4,7 @@ module ParamProtected
     def self.extended(action_controller)
       action_controller.class_eval do
         extend  ClassMethods
-        metaclass.alias_method_chain :inherited, :protector
+        singleton_class.alias_method_chain :inherited, :protector
         include InstanceMethods
         alias_method_chain :params, :protection
       end
