@@ -186,7 +186,7 @@ module ParamProtected
       else
         raise ArgumentError, "unexpected exclusivity: #{exclusivity}"
       end
-      params.each{ |k, v| filter_params(protected_params[k], v, exclusivity) }
+      params.each{ |k, v| filter_params(find_by_key(protected_params, k), v, exclusivity) }
       params
     end
 
