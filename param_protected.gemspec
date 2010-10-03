@@ -5,18 +5,20 @@
 
 Gem::Specification.new do |s|
   s.name = %q{param_protected}
-  s.version = "1.3.0"
+  s.version = "1.3.1"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Christopher J. Bottaro"]
-  s.date = %q{2010-05-25}
+  s.date = %q{2010-10-03}
   s.description = %q{Provides two class methods on ActiveController::Base that filter the params hash for that controller's actions.  You can think of them as the controller analog of attr_protected and attr_accessible.}
   s.email = %q{cjbottaro@alumni.cs.utexas.edu}
   s.extra_rdoc_files = [
-    "README.rdoc"
+    "LICENSE",
+     "README.rdoc"
   ]
   s.files = [
     "CHANGELOG",
+     "LICENSE",
      "README.rdoc",
      "Rakefile",
      "VERSION",
@@ -61,7 +63,7 @@ Gem::Specification.new do |s|
   s.homepage = %q{http://github.com/cjbottaro/param_protected}
   s.rdoc_options = ["--charset=UTF-8"]
   s.require_paths = ["lib"]
-  s.rubygems_version = %q{1.3.6}
+  s.rubygems_version = %q{1.3.7}
   s.summary = %q{Filter unwanted parameters in your controllers and actions.}
   s.test_files = [
     "test/accessible_except_test.rb",
@@ -96,7 +98,7 @@ Gem::Specification.new do |s|
     current_version = Gem::Specification::CURRENT_SPECIFICATION_VERSION
     s.specification_version = 3
 
-    if Gem::Version.new(Gem::RubyGemsVersion) >= Gem::Version.new('1.2.0') then
+    if Gem::Version.new(Gem::VERSION) >= Gem::Version.new('1.2.0') then
     else
     end
   else
