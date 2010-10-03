@@ -1,3 +1,4 @@
+require 'rubygems'
 require 'rake'
 require 'rake/testtask'
 require 'rake/rdoctask'
@@ -12,6 +13,7 @@ begin
     gemspec.homepage = "http://github.com/cjbottaro/param_protected"
     gemspec.authors = ["Christopher J. Bottaro"]
   end
+  Jeweler::GemcutterTasks.new
 rescue LoadError
   puts "Jeweler not available. Install it with: sudo gem install technicalpickles-jeweler -s http://gems.github.com"
 end
