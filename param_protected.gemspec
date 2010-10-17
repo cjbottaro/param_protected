@@ -9,7 +9,7 @@ Gem::Specification.new do |s|
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Christopher J. Bottaro"]
-  s.date = %q{2010-09-02}
+  s.date = %q{2010-10-17}
   s.description = %q{Provides two class methods on ActiveController::Base that filter the params hash for that controller's actions.  You can think of them as the controller analog of attr_protected and attr_accessible.}
   s.email = %q{cjbottaro@alumni.cs.utexas.edu}
   s.extra_rdoc_files = [
@@ -30,6 +30,8 @@ Gem::Specification.new do |s|
      "param_protected.gemspec",
      "test/accessible_except_test.rb",
      "test/accessible_only_test.rb",
+     "test/app_root/Gemfile",
+     "test/app_root/Gemfile.lock",
      "test/app_root/app/controllers/accessible_except_controller.rb",
      "test/app_root/app/controllers/accessible_only_controller.rb",
      "test/app_root/app/controllers/application_controller.rb",
@@ -38,10 +40,13 @@ Gem::Specification.new do |s|
      "test/app_root/app/controllers/merge_controller.rb",
      "test/app_root/app/controllers/protected_controller.rb",
      "test/app_root/app/controllers/users_controller.rb",
+     "test/app_root/config.ru",
+     "test/app_root/config/application.rb",
      "test/app_root/config/boot.rb",
      "test/app_root/config/environment.rb",
      "test/app_root/config/routes.rb",
      "test/app_root/lib/console_with_fixtures.rb",
+     "test/app_root/script/rails",
      "test/conditions_controller_test.rb",
      "test/inherited_users_controller_test.rb",
      "test/merge_controller_test.rb",
