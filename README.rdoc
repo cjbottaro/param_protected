@@ -3,11 +3,11 @@ This plugin provides two class methods on <tt>ActiveController::Base</tt> that f
 
 === Installation
 
-Put in your <tt>environment.rb</tt> file...
-
-  config.gem "param_protected"
+  gem install param_protected
   
-Alternatively, just install the gem from the command line and <tt>require "param_protected"</tt> somewhere in your project.
+Note: the latest version works with Rails 3.0.x.  If you want Rails 2.3.x compatibility, install the latest 1.x.x version of <tt>param_protected</tt>.  See the rails23 branch {here}[http://github.com/cjbottaro/param_protected/tree/rails23] for the most up to date 1.x.x version (look at the tags).
+
+Thanks to {jonleighton}[http://github.com/jonleighton] for the Rails 3 port.
 
 === Usage
  class YourController < ActiveController::Base
@@ -71,8 +71,9 @@ Credit: Mortiz Heidkamp
 === How does it work?
 It does an <tt>alias_method_chain</tt> on <tt>ActionController::Base#params</tt> that filters (and caches) the params.  You can get the unfiltered, pristine params by calling <tt>ActionController::Base#params_without_protection</tt>.
 
-=== Author
+=== Original Author
 Christopher J. Bottaro - {cjbottaro}[http://github.com/cjbottaro]
 
 === Contributors
 Moritz Heidkamp - {DerGuteMoritz}[http://github.com/DerGuteMoritz]
+Jon Leighton - {jonleighton}[http://github.com/jonleighton]
