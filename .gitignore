@@ -1,0 +1,5 @@
+.bundle
+pkg
+test/app_root/log
+vendor/bundle
+vendor/cache
