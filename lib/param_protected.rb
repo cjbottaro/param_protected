@@ -2,4 +2,5 @@ require "param_protected/constants"
 require "param_protected/protector"
 require "param_protected/controller_modifications"
 
-ActionController::Base.extend(ParamProtected::ControllerModifications)
+ActionController::Base.send(:include, ParamProtected::ControllerModifications)
+
