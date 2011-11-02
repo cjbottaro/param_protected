@@ -1,14 +1,5 @@
 module ParamProtected
   class Protector
-  
-    def self.instance(controller)
-      unless controller.respond_to?(:pp_protector)
-        controller.class_eval{ @pp_protector = Protector.new }
-        controller.singleton_class.class_eval { attr_reader :pp_protector }
-      end
-      controller.pp_protector
-    end
-    
     def initialize
       @protections = []
     end
@@ -16,13 +7,13 @@ module ParamProtected
     def initialize_copy(copy)
       copy.instance_variable_set(:@protections, deep_copy(@protections))
     end
-    
+
     def declare_protection(params, options, exclusivity)
       params  = normalize_params(params)
       actions, condition = normalize_options(options)
       @protections << [params, actions, condition, exclusivity]
     end
-    
+
     def protect(controller, controller_params, action_name)
       deep_copy(controller_params).tap do |params|
         protections_for_action(controller, action_name).each do |exclusivity, protected_params|
@@ -30,7 +21,7 @@ module ParamProtected
         end
       end
     end
-    
+
   private
 
     def protections_for_action(controller, action_name)
@@ -42,15 +33,15 @@ module ParamProtected
       end
     end
 
-    # Merge protections for the same params into one so as to allow extension of them 
+    # Merge protections for the same params into one so as to allow extension of them
     # in inheriting controllers.
-    # 
+    #
     # Mutating the first argument is okay since this method is used within inject only.
-    # 
+    #
     # Example:
     # merge_protections({ :foo => { :qux => nil }, :bar => { :baz => nil, :qux => nil } },
     #                   { :foo => { :baz => nil, :qux => { :foo => nil } } })
-    # => 
+    # =>
     #
     # { :foo => { :baz => nil, :qux => { :foo => nil } }, :bar => { :baz =>nil, :qux => nil } }
     def merge_protections(protections, protected_params)
@@ -64,10 +55,10 @@ module ParamProtected
 
       protections
     end
-    
+
     # When specifying params to protect, we allow a combination of arrays and hashes much like how
     # ActiveRecord::Base#find's :include options works.  This method normalizes that into just nested hashes,
-    # stringifying the keys and setting all values to nil.  This format is easier/faster to work with when 
+    # stringifying the keys and setting all values to nil.  This format is easier/faster to work with when
     # filtering the controller params.
     # Example...
     #   [:a, {:b => [:c, :d]}]
@@ -95,7 +86,7 @@ module ParamProtected
         k.to_s
       end
     end
-    
+
     # When specifying which actions param protection apply to, we allow a format like this...
     #   :only => [:action1, :action2]
     # This method normalizes that to...
@@ -118,16 +109,16 @@ module ParamProtected
       actions = actions.collect{ |action| action.try(:to_s) }
 
       condition = condition.first || :if
-      
+
       if options.has_key?(condition)
         condition_value = options[condition]
       else
         condition_value = true
       end
-      
+
       [[scope, *actions], [condition, condition_value]]
     end
-    
+
     # When #dup just isn't enough... :P
     def deep_copy(object)
       try_to_clone(object).tap do |new_object|
@@ -139,7 +130,7 @@ module ParamProtected
         end
       end
     end
-    
+
     # Some objects are not dupable... like TrueClass, FalseClass and NilClass.
     def try_to_clone(object)
       object.clone
@@ -163,7 +154,7 @@ module ParamProtected
         result
       end
     end
-    
+
     def action_matches?(scope, actions, action_name)
       if action_name.blank?
         false
@@ -175,7 +166,7 @@ module ParamProtected
         raise ArgumentError, "unexpected scope (#{scope}), expected :only or :except"
       end
     end
-    
+
     def filter_params(protected_params, params, exclusivity)
       return unless params.kind_of?(Hash)
       return if protected_params.nil?
@@ -195,7 +186,7 @@ module ParamProtected
         key_matches?(k, key)
       end.try(:last)
     end
-    
+
     def key_exists?(protected_params, key)
       protected_params.any? do |k,v|
         key_matches?(k, key)
