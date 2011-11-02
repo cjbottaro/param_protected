@@ -3,11 +3,21 @@ This plugin provides two class methods on <tt>ActiveController::Base</tt> that f
 
 === Installation
 
-  gem install param_protected
-  
-Note: the latest version works with Rails 3.0.x.  If you want Rails 2.3.x compatibility, install the latest 1.x.x version of <tt>param_protected</tt>.  See the rails23 branch {here}[http://github.com/cjbottaro/param_protected/tree/rails23] for the most up to date 1.x.x version (look at the tags).
+==== Rails 2.3.x
+
+  gem install param_protected -v "~> 1.0.0"
+
+==== Rails 3.0.x
+
+  gem "param_protected", "~> 2.0.0"
 
 Thanks to {jonleighton}[http://github.com/jonleighton] for the Rails 3 port.
+
+==== Rails 3.1.x
+
+  gem "param_protected", "~> 3.0.0"
+
+Thanks to {gucki}[https://github.com/gucki] for the Rails 3.1 port.
 
 === Usage
  class YourController < ActiveController::Base
@@ -76,4 +86,7 @@ Christopher J. Bottaro - {cjbottaro}[http://github.com/cjbottaro]
 
 === Contributors
 Moritz Heidkamp - {DerGuteMoritz}[http://github.com/DerGuteMoritz]
+
 Jon Leighton - {jonleighton}[http://github.com/jonleighton]
+
+Corin Langosch - {gucki}[https://github.com/gucki]
