@@ -1,3 +1,5 @@
 .bundle
 vendor/bundle
 pkg
+rdoc
+doc
