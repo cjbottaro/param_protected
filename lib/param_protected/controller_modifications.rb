@@ -12,11 +12,13 @@ module ParamProtected
     
     module ClassMethods
       
-      def param_protected(params, actions = nil)
+      def param_protected(*params)
+		actions = params.extract_options!
         Protector.instance(self).declare_protection(params, actions, BLACKLIST)
       end
       
-      def param_accessible(params, actions = nil)
+      def param_accessible(*params)
+		actions = params.extract_options!
         Protector.instance(self).declare_protection(params, actions, WHITELIST)
       end
 
