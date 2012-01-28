@@ -19,6 +19,10 @@ Thanks to {jonleighton}[http://github.com/jonleighton] for the Rails 3 port.
 
 Thanks to {gucki}[https://github.com/gucki] for the Rails 3.1 port.
 
+==== Rails 3.2.x
+
+  gem "param_protected", "~> 4.0.0"
+
 === Usage
  class YourController < ActiveController::Base
    param_protected <param_name> <options>
