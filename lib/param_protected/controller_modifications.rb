@@ -29,15 +29,13 @@ module ParamProtected
       end
     end
 
-    module InstanceMethods
-      def _protector
-        self.class._protector
-      end
+    def _protector
+      self.class._protector
+    end
 
-      def params_with_protection
-        return params_without_protection if action_name.blank?
-        @params_with_protection ||= _protector.protect(self, params_without_protection, action_name)
-      end
+    def params_with_protection
+      return params_without_protection if action_name.blank?
+      @params_with_protection ||= _protector.protect(self, params_without_protection, action_name)
     end
   end
 end
